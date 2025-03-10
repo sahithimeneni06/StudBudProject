@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StudBud - AI Study Planner</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>StudBud: AI Study Planner</h1>
+    <form id="studyForm">
+        <label>Goal:</label>
+        <input type="text" id="goal" required>
+
+        <label>Strengths:</label>
+        <input type="text" id="strengths" required>
+
+        <label>Weaknesses:</label>
+        <input type="text" id="weaknesses" required>
+
+        <label>Preferences:</label>
+        <input type="text" id="preferences" required>
+
+        <button type="submit">Generate Plan</button>
+    </form>
+
+    <div id="planResult"></div>
+
+    <script>
+        document.getElementById("studyForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const data = {
+                goal: document.getElementById("goal").value,
+                strengths: document.getElementById("strengths").value,
+                weaknesses: document.getElementById("weaknesses").value,
+                preferences: document.getElementById("preferences").value
+            };
+            fetch("/generate-plan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(plan => {
+                let result = "<h2>Study Plan</h2>";
+                plan.forEach(day => {
+                    result += <p><strong>${day.day}:</strong> ${day.task}</p>;
+                });
+                document.getElementById("planResult").innerHTML = result;
+            });
+        });
+    </script>
+</body>
+</html>
